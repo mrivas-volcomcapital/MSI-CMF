@@ -1,0 +1,172 @@
+@model MSI_CMF.Models.Fondos03ViewModel
+@{
+    ViewData["Title"] = "FONDOS 03 — Remuneraciones y Gastos";
+}
+
+<h2 class="mb-3"><i class="fa-solid fa-file-invoice me-2"></i>FONDOS 03 — Remuneraciones y Gastos</h2>
+
+<!-- Filtro de fecha -->
+<div class="card shadow-sm mb-3">
+    <div class="card-body py-2">
+        <div class="row g-2 align-items-end">
+            <div class="col-auto">
+                <label class="form-label fw-semibold mb-1">Fecha de consulta</label>
+                <input type="date" id="fechaConsulta" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-auto">
+                <button id="btnConsultar" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i>Consultar
+                </button>
+            </div>
+            <div class="col-auto d-none" id="spinnerConsulta">
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                <span class="ms-1 text-muted small">Consultando...</span>
+            </div>
+            <div class="col-auto ms-auto">
+                <a id="btnExportar" class="btn btn-outline-success disabled" href="#" target="_blank">
+                    <i class="fa-solid fa-file-excel me-1"></i>Exportar Excel
+                </a>
+            </div>
+        </div>
+        <div id="mensajeError" class="text-danger small mt-1 d-none"></div>
+    </div>
+</div>
+
+<!-- Registro 1: Remuneraciones -->
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-dark text-white py-2">
+        <i class="fa-solid fa-circle-info me-1"></i>Registro 01 — Remuneraciones por fondo/serie
+    </div>
+    <div class="card-body p-2">
+        <div class="table-responsive">
+            <table id="tablaR1" class="table table-striped table-bordered table-hover table-sm w-100">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tipo Reg.</th>
+                        <th>Fecha</th>
+                        <th>Run Fondo</th>
+                        <th>Serie</th>
+                        <th>Monto Rem. Fija</th>
+                        <th>Monto Costo Otros Veh.</th>
+                        <th>Horizonte</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Registro 2: Gastos -->
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-dark text-white py-2">
+        <i class="fa-solid fa-circle-info me-1"></i>Registro 02 — Gastos operacionales
+    </div>
+    <div class="card-body p-2">
+        <div class="table-responsive">
+            <table id="tablaR2" class="table table-striped table-bordered table-hover table-sm w-100">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tipo Reg.</th>
+                        <th>Fecha</th>
+                        <th>Run Fondo</th>
+                        <th>Gastos Op. Afectos</th>
+                        <th>Gastos Op. No Afectos</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Registro 3: Tasa anual costos -->
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-dark text-white py-2">
+        <i class="fa-solid fa-circle-info me-1"></i>Registro 03 — Tasa anual de costos
+    </div>
+    <div class="card-body p-2">
+        <div class="table-responsive">
+            <table id="tablaR3" class="table table-striped table-bordered table-hover table-sm w-100">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Run Fondo</th>
+                        <th>Cód. RD Fondo</th>
+                        <th>Tasa Anual Costos</th>
+                        <th>Costo Total Período</th>
+                        <th>Promedio Móvil</th>
+                        <th>Días con datos</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const dtOpts = {
+        destroy: true, responsive: true, pageLength: 25,
+        language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-CL.json' }
+    };
+
+    function fmtNum(v) {
+        if (v == null) return '';
+        return parseFloat(v).toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+    }
+
+    $('#btnConsultar').on('click', function () {
+        const fecha = $('#fechaConsulta').val();
+        if (!fecha) { $('#mensajeError').text('Seleccione una fecha.').removeClass('d-none'); return; }
+        $('#mensajeError').addClass('d-none');
+        $('#spinnerConsulta').removeClass('d-none');
+        $('#btnConsultar').prop('disabled', true);
+
+        $.getJSON('@Url.Action("GetFondos03Json", "Reportes")', { fecha })
+            .done(function (res) {
+                if (res.error) { $('#mensajeError').text(res.error).removeClass('d-none'); return; }
+
+                $('#btnExportar').attr('href', '@Url.Action("ExportarExcel03", "Reportes")?fecha=' + fecha).removeClass('disabled');
+
+                $('#tablaR1').DataTable({ ...dtOpts, data: res.registro1,
+                    columns: [
+                        { data: 'tipo_registro' },
+                        { data: 'fecha_informacion' },
+                        { data: 'run_fondo' },
+                        { data: 'codigo_serie' },
+                        { data: 'monto_remuneracion_fija',               render: fmtNum },
+                        { data: 'monto_costo_inversion_otros_vehiculos',  render: fmtNum },
+                        { data: 'horizonte_tiempo',                       defaultContent: '' }
+                    ]
+                });
+
+                $('#tablaR2').DataTable({ ...dtOpts, data: res.registro2,
+                    columns: [
+                        { data: 'tipo_registro' },
+                        { data: 'fecha_informacion' },
+                        { data: 'run_fondo' },
+                        { data: 'monto_gastos_operacionales_afectos',    render: fmtNum },
+                        { data: 'monto_gastos_operacionales_no_afectos', render: fmtNum }
+                    ]
+                });
+
+                $('#tablaR3').DataTable({ ...dtOpts, data: res.registro3,
+                    columns: [
+                        { data: 'run_fondo' },
+                        { data: 'codigo_RDFondo' },
+                        { data: 'tasa_anual_costos',  render: fmtNum },
+                        { data: 'costo_total_periodo', render: fmtNum },
+                        { data: 'promedio_movil',      render: fmtNum },
+                        { data: 'dias_con_datos' }
+                    ]
+                });
+            })
+            .fail(function () { $('#mensajeError').text('Error de comunicación con el servidor.').removeClass('d-none'); })
+            .always(function () {
+                $('#spinnerConsulta').addClass('d-none');
+                $('#btnConsultar').prop('disabled', false);
+            });
+    });
+</script>
+}

@@ -1,14 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MSI_CMF.Models;
 using System.Diagnostics;
 
 namespace MSI_CMF.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Fondos03", "Reportes");
         }
 
         public IActionResult Privacy()

@@ -1,50 +1,152 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MSI_CMF</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] — MSI CMF</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/MSI_CMF.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MSI_CMF</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    var userName = User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? "Usuario";
+    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+    var initials = string.Concat(userName.Split(' ').Take(2).Select(p => p.Length > 0 ? char.ToUpper(p[0]).ToString() : ""));
+
+    <!-- ══ Sidebar ══════════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+
+        <a class="sidebar-brand" asp-controller="Home" asp-action="Index">
+            <div class="brand-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div>
+                <div class="brand-name">MSI CMF</div>
+                <div class="brand-sub">Volcom Capital</div>
+            </div>
+        </a>
+
+        <nav class="sidebar-nav">
+            <p class="nav-label">Reportes CMF</p>
+
+            <a class="sidebar-link @NavCls("Reportes","Fondos03")"
+               asp-controller="Reportes" asp-action="Fondos03">
+                <i class="fa-regular fa-file-lines"></i><span>FONDOS 03</span>
+            </a>
+            <a class="sidebar-link @NavCls("Reportes","Fondos05")"
+               asp-controller="Reportes" asp-action="Fondos05">
+                <i class="fa-regular fa-file-lines"></i><span>FONDOS 05</span>
+            </a>
+            <a class="sidebar-link @NavCls("Reportes","Fondos06")"
+               asp-controller="Reportes" asp-action="Fondos06">
+                <i class="fa-regular fa-file-lines"></i><span>FONDOS 06</span>
+            </a>
+
+            <p class="nav-label">Mantenedores</p>
+
+            <a class="sidebar-link @NavCls("CostoInversion")"
+               asp-controller="CostoInversion" asp-action="Index">
+                <i class="fa-solid fa-coins"></i><span>Costo Inv. Vehículos</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sf-av">@initials</div>
+            <div style="min-width:0">
+                <div class="sf-name">@userName</div>
+                <div class="sf-role">@userRole</div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ══ Main ═════════════════════════════════════════════ -->
+    <div class="main-wrapper">
+
+        <header class="topbar">
+            <button class="topbar-toggle" id="sidebarToggle" aria-label="Menú">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="topbar-title">@ViewData["Title"]</span>
+
+            <div class="ms-auto">
+                <div class="dropdown">
+                    <button class="btn-user dropdown-toggle" type="button"
+                            id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="u-av">@initials</div>
+                        <span class="d-none d-sm-inline">@userName</span>
+                        <i class="fa-solid fa-chevron-down fa-xs ms-1" style="color:var(--muted)"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                        <li>
+                            <div class="dropdown-header">
+                                <div class="fw-semibold" style="color:#1e293b">@userName</div>
+                                <div style="color:var(--muted)">@userRole</div>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <li><hr class="dropdown-divider" /></li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li>
+                                <a class="dropdown-item" asp-controller="Account" asp-action="CrearUsuario">
+                                    <i class="fa-solid fa-user-plus me-2 text-primary"></i>Crear usuario
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                        }
+                        <li>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+        </header>
+
+        <main class="content-area">
             @RenderBody()
         </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - MSI_CMF - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+        <footer class="app-footer">
+            &copy; @DateTime.Now.Year MSI CMF &middot; Volcom Capital &middot; Plataforma Regulatoria CMF
+        </footer>
+    </div>
+}
+else
+{
+    @RenderBody()
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+@functions {
+    string NavCls(string controller, string? action = null)
+    {
+        var c = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+        var a = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+        return c.Equals(controller, StringComparison.OrdinalIgnoreCase)
+            && (action is null || a.Equals(action, StringComparison.OrdinalIgnoreCase))
+            ? "active" : string.Empty;
+    }
+}
+

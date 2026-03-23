@@ -7,4 +7,9 @@
     <RootNamespace>MSI_CMF</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
+  </ItemGroup>
+
 </Project>

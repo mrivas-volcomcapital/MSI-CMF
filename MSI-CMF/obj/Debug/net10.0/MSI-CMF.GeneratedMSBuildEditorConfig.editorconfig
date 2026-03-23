@@ -22,12 +22,40 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
+[C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Account/CrearUsuario.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxDcmVhclVzdWFyaW8uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Repositorio local/MSI-CMF/MSI-CMF/Views/CostoInversion/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29zdG9JbnZlcnNpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Reportes/Fondos03.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0ZXNcRm9uZG9zMDMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Reportes/Fondos05.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0ZXNcRm9uZG9zMDUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Reportes/Fondos06.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0ZXNcRm9uZG9zMDYuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Repositorio local/MSI-CMF/MSI-CMF/Views/Shared/Error.cshtml]
